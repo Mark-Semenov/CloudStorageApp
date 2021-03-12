@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+
+<h:head>
+    <title>Cloud Storage</title>
+
+    <style type="text/css">
+
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+        }
+
+        .main_page {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ui-treetable {
+            margin-top: 40px
+        }
+
+        .ui-treetable table {
+            table-layout: fixed
+        }
+
+
+    </style>
+
+</h:head>
+
+
+<h:body>
+    <header>
+        <div class="card">
+            <h:form>
+                <p:breadCrumb>
+                    <p:menuitem value="Files"/>
+                    <p:menuitem value="Photos"/>
+                </p:breadCrumb>
+            </h:form>
+        </div>
+    </header>
+
+    <div class="content ">
+
+
+        <div class="card">
+            <h:form>
+                <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced" dragDropSupport="true"
+                              update="message" id="fileupload"/>
+                <p:growl id="message" showDetail="true"/>
+
+            </h:form>
+        </div>
+
+
+
+
+        <div class="card">
+            <p:dataTable id="products" var="file" value="#{indexController.fileList}">
+                <f:facet name="header">
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        List of Products
+
+                        <div>
+                            <p:commandButton id="toggler" type="button" value="Columns" icon="pi pi-align-justify"/>
+                            <p:columnToggler datasource="products" trigger="toggler"/>
+                        </div>
+                    </div>
+                </f:facet>
+
+                <p:column headerText="Name">
+                    <h:outputText value="#{file.name}" />
+                </p:column>
+
+                <p:column headerText="Type">
+                    <h:outputText value="#{file.type}" />
+                </p:column>
+
+                <p:column headerText="Size">
+                    <h:outputText value="#{file.size}" />
+                </p:column>
+
+            </p:dataTable>
+        </div>
+
+    </div>
+
+
+    <footer>
+
+
+    </footer>
+
+</h:body>
+</html>
