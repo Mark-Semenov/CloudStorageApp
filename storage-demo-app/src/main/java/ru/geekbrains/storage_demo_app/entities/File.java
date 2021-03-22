@@ -5,7 +5,9 @@ import java.io.Serializable;
 
 @NamedQueries({
 
-        @NamedQuery(name = "File.files", query = "from File")
+        @NamedQuery(name = "GET_FILES", query = "from File"),
+        @NamedQuery(name = "GET_FILES_BY_USER_ID", query = "from File f inner join User u on f.user.id = u.id where u.id = :id"),
+        @NamedQuery(name = "GET_FILES_BY_USER_NAME", query = "select f from File f inner join User u on f.user.id = u.id where u.login = :login"),
 })
 
 
@@ -14,17 +16,28 @@ import java.io.Serializable;
 public class File implements Serializable {
 
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @GeneratedValue (strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private String type;
     private byte [] content;
     private Long size;
 
+
     @Transient
     private static final long serialVersionUID = 1L;
 
+    @ManyToOne
+    private User user;
+
     public File() {
+    }
+
+    public File(String name, String type, byte[] content, Long size) {
+        this.name = name;
+        this.type = type;
+        this.content = content;
+        this.size = size;
     }
 
     public File(Long id, String name, byte[] content) {
@@ -80,5 +93,13 @@ public class File implements Serializable {
 
     public void setSize(Long size) {
         this.size = size;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

@@ -10,16 +10,35 @@ import java.util.List;
 @Stateful
 public class FileDao {
 
-    @PersistenceContext (unitName = "ps")
+    @PersistenceContext(unitName = "ps")
     EntityManager entityManager;
 
 
-    public List<File> getAllFiles(){
-        return entityManager.createNamedQuery("File.files", File.class).getResultList();
+    public List<File> getAllFiles() {
+        return entityManager.createNamedQuery("GET_FILES", File.class).getResultList();
     }
 
-    public void writeFile(File file){
+    public void writeFile(File file) {
         entityManager.persist(file);
     }
+
+    public File getFileById(Long id) {
+        return entityManager.find(File.class, id);
+    }
+
+
+    public List<File> getFilesByUserId(Long id) {
+        return entityManager.createNamedQuery("GET_FILES_BY_USER_ID", File.class).setParameter("id", id).getResultList();
+    }
+
+    public List<File> getFilesByUserName(String login) {
+        return entityManager.createNamedQuery("GET_FILES_BY_USER_NAME", File.class).setParameter("login", login).getResultList();
+    }
+
+
+    public void deleteFileById(Long id) {
+        entityManager.remove(getFileById(id));
+    }
+
 
 }

@@ -4,13 +4,14 @@
 }
 
 .container {
-    max-width: 1140px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
-.main_page {
+.main_content{
     display: flex;
-    flex-wrap: wrap;
     flex-direction: column;
-    align-items: center;
+    top: 100px;
+    background-color: bisque;
+    border: cadetblue 1px;
 }

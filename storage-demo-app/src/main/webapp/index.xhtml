@@ -6,104 +6,86 @@
 
 
 <h:head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
     <title>Cloud Storage</title>
-
-    <style type="text/css">
-
-
-        * {
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1140px;
-            margin: 0 auto;
-        }
-
-        .main_page {
-            display: flex;
-            flex-wrap: wrap;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .ui-treetable {
-            margin-top: 40px
-        }
-
-        .ui-treetable table {
-            table-layout: fixed
-        }
-
-
-    </style>
 
 </h:head>
 
 
 <h:body>
-    <header>
-        <div class="card">
-            <h:form>
-                <p:breadCrumb>
-                    <p:menuitem value="Files"/>
-                    <p:menuitem value="Photos"/>
-                </p:breadCrumb>
-            </h:form>
-        </div>
-    </header>
-
-    <div class="content ">
 
 
-        <div class="card">
-            <h:form>
-                <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced" dragDropSupport="true"
-                              update="message" id="fileupload"/>
-                <p:growl id="message" showDetail="true"/>
+    <div class="card">
 
-            </h:form>
-        </div>
+        <h:form>
+            <h:commandButton action="#{indexController.logout}" value="Logout"/>
+        </h:form>
+
+        <p:growl id="messages" showDetail="true"/>
+
+        <h:form>
+            <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced"
+                          uploadIcon="pi pi-folder-open" update="messages" id="fileupload" auto="true"/>
+            <p:autoUpdate/>
+        </h:form>
 
 
+        <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
+                  resizable="false">
+            <i class="pi pi-spinner pi-spin" style="font-size:3rem"/>
+        </p:dialog>
 
 
-        <div class="card">
-            <p:dataTable id="products" var="file" value="#{indexController.fileList}">
-                <f:facet name="header">
-                    <div class="p-d-flex p-jc-between p-ai-center">
-                        List of Products
+        <h:form id="files_form" enctype="multipart/form-data" method="POST">
 
-                        <div>
-                            <p:commandButton id="toggler" type="button" value="Columns" icon="pi pi-align-justify"/>
-                            <p:columnToggler datasource="products" trigger="toggler"/>
-                        </div>
-                    </div>
-                </f:facet>
+            <p:dataTable id="eventsDT" var="file" value="#{indexController.fileList}" selectionMode="single"
+                         selection="#{indexController.selectedFile}" rowKey="#{file.id}">
+                <p:autoUpdate/>
+                <p:ajax event="rowSelect" listener="#{indexController.onRowSelect}" update="messages"/>
+                <p:ajax event="rowUnselect" listener="#{indexController.onRowUnselect}" update="messages"/>
 
                 <p:column headerText="Name">
-                    <h:outputText value="#{file.name}" />
+                    <h:outputText value="#{file.name}"/>
                 </p:column>
 
                 <p:column headerText="Type">
-                    <h:outputText value="#{file.type}" />
+                    <h:outputText value="#{file.type}"/>
                 </p:column>
 
                 <p:column headerText="Size">
-                    <h:outputText value="#{file.size}" />
+                    <h:outputText value="#{file.size}"/>
                 </p:column>
 
+                <p:column headerText="Download">
+                    <p:commandButton icon="pi pi-cloud-download" styleClass="rounded-button ui-button-flat"
+                                     onclick="PrimeFaces.monitorDownload(start, stop)">
+                        <p:fileDownload value="#{indexController.fileDownload}"/>
+                    </p:commandButton>
+                </p:column>
+
+
+                <p:column headerText="Delete">
+                    <p:commandButton type="button" icon="pi pi-times"
+                                     styleClass="rounded-button ui-button-danger ui-button-flat"
+                                     action="#{indexController.deleteSelectedFile}">
+                        <f:ajax event="click" render="eventsDT"/>
+                    </p:commandButton>
+                </p:column>
+
+
             </p:dataTable>
-        </div>
+
+        </h:form>
+
 
     </div>
 
 
-    <footer>
-
-
-    </footer>
-
 </h:body>
+
 </html>

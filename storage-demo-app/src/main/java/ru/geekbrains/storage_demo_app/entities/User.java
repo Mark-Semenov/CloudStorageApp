@@ -2,11 +2,16 @@ package ru.geekbrains.storage_demo_app.entities;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 
 
 @NamedQueries({
-        @NamedQuery(name = "User.users", query ="from User"),
-        @NamedQuery(name = "User.checkByLogPas", query = "from User u where u.nickName = :nickname and u.password = :password")
+        @NamedQuery(name = "GET_USERS", query ="from User"),
+        @NamedQuery(name = "CHECK_USER", query = "from User u where u.login = :login and u.password = :password"),
+        @NamedQuery(name = "GET_USER_BY_ID", query = "from User u where u.id = :id"),
+        @NamedQuery(name = "GET_USER_BY_LOGIN", query = "from User u where u.login = :login"),
+
 })
 
 @Entity
@@ -14,23 +19,44 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String firstName;
     private String lastName;
-    private String nickName;
+    private String login;
     private String password;
-    private String privileges;
     private int age;
+
+    @OneToMany
+    @JoinColumn (name = "user_id")
+    private List<Folder> folders;
+
+    @OneToMany
+    @JoinColumn (name = "user_id")
+    private List<File> files;
+
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
+
+    @Transient
+    private static final long serialVersionUID = 1L;
 
     public User() {
     }
 
-    public User(String firstName, String lastName, String nickName, String password) {
+    public User(String firstName, String lastName, String login, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.nickName = nickName;
+        this.login = login;
         this.password = password;
     }
 
@@ -51,12 +77,12 @@ public class User implements Serializable {
         this.lastName = lastName;
     }
 
-    public String getNickName() {
-        return nickName;
+    public String getLogin() {
+        return login;
     }
 
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
+    public void setLogin(String nickName) {
+        this.login = nickName;
     }
 
     public String getPassword() {
@@ -65,14 +91,6 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getPrivileges() {
-        return privileges;
-    }
-
-    public void setPrivileges(String privileges) {
-        this.privileges = privileges;
     }
 
     public int getAge() {
@@ -90,6 +108,30 @@ public class User implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public List<Folder> getFolders() {
+        return folders;
+    }
+
+    public void setFolders(List<Folder> folders) {
+        this.folders = folders;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<File> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<File> files) {
+        this.files = files;
     }
 }
 
