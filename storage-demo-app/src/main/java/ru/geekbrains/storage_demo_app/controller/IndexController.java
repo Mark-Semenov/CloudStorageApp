@@ -57,7 +57,6 @@ public class IndexController implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("File isn't selected"));
         } else {
             fileProcess.deleteFile(selectedFile.getId());
-            PrimeFaces.current().ajax().update("files_form:eventsDT");
             selectedFile = null;
             downloadFile = null;
         }
@@ -84,7 +83,6 @@ public class IndexController implements Serializable {
         FacesMessage message = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, message);
         fileProcess.upload(fileBuffer);
-        PrimeFaces.current().ajax().update("files_form:eventsDT");
     }
 
     public void onRowSelect(SelectEvent<File> event) {

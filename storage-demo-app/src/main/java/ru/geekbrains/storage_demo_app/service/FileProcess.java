@@ -46,10 +46,15 @@ public class FileProcess {
 
     @TransactionAttribute
     public void upload(List<File> files) {
+        File f = new File();
+        f.setUser(this.user);
         for (File file : files) {
-            file.setUser(this.user);
-            fileDao.writeFile(file);
-            writeFileAtHDD(file);
+            f.setName(file.getName());
+            f.setSize(file.getSize());
+            f.setContent(file.getContent());
+            f.setType(file.getType());
+            fileDao.writeFile(f);
+            writeFileAtHDD(f);
         }
     }
 

@@ -4,14 +4,11 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-
+<f:view contentType="text/html;charset=UTF-8" encoding="UTF-8"/>
 <h:head>
-    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"/>
+    <h:outputStylesheet name="primefaces/components.css"/>
+    <h:outputStylesheet name="primefaces/components.js"/>
     <title>Cloud Storage</title>
 
 </h:head>
@@ -19,18 +16,19 @@
 
 <h:body>
 
-
     <div class="card">
+        <p:growl id="messages" showDetail="true"/>
 
+<!--        Logout-->
         <h:form>
             <h:commandButton action="#{indexController.logout}" value="Logout"/>
         </h:form>
 
-        <p:growl id="messages" showDetail="true"/>
 
+<!--        Upload-->
         <h:form>
             <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced"
-                          uploadIcon="pi pi-folder-open" update="messages" id="fileupload" auto="true"/>
+                         uploadIcon="pi pi-folder-open" update="messages" id="fileupload" auto="true"/>
             <p:autoUpdate/>
         </h:form>
 
@@ -42,12 +40,11 @@
 
 
         <h:form id="files_form" enctype="multipart/form-data" method="POST">
-
             <p:dataTable id="eventsDT" var="file" value="#{indexController.fileList}" selectionMode="single"
                          selection="#{indexController.selectedFile}" rowKey="#{file.id}">
-                <p:autoUpdate/>
-                <p:ajax event="rowSelect" listener="#{indexController.onRowSelect}" update="messages"/>
-                <p:ajax event="rowUnselect" listener="#{indexController.onRowUnselect}" update="messages"/>
+
+                <p:ajax event="rowSelect" listener="#{indexController.onRowSelect}" update="messages eventsDT"/>
+                <p:ajax event="rowUnselect" listener="#{indexController.onRowUnselect}" update="messages eventsDT"/>
 
                 <p:column headerText="Name">
                     <h:outputText value="#{file.name}"/>
@@ -68,7 +65,7 @@
                     </p:commandButton>
                 </p:column>
 
-
+<!--            Delete-->
                 <p:column headerText="Delete">
                     <p:commandButton type="button" icon="pi pi-times"
                                      styleClass="rounded-button ui-button-danger ui-button-flat"
