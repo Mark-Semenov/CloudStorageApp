@@ -7,8 +7,7 @@
 <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8"/>
 <h:head>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
-    <h:outputStylesheet name="primefaces/components.css"/>
-    <h:outputStylesheet name="primefaces/components.js"/>
+    <link href="style.css" rel="stylesheet"/>
     <title>Cloud Storage</title>
 
 </h:head>
@@ -16,72 +15,153 @@
 
 <h:body>
 
-    <div class="card">
-        <p:growl id="messages" showDetail="true"/>
-
-<!--        Logout-->
-        <h:form>
-            <h:commandButton action="#{indexController.logout}" value="Logout"/>
-        </h:form>
+    <div class="wrapper">
+        <div class="_top">
 
 
-<!--        Upload-->
-        <h:form>
-            <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced"
-                         uploadIcon="pi pi-folder-open" update="messages" id="fileupload" auto="true"/>
-            <p:autoUpdate/>
-        </h:form>
+            <div class="main_content">
+
+                <div class="left_content">
+
+                    <div class="cloud_storage">
+                        <h2 class="cloud_storage_logo">Cloud Storage</h2>
+                        <h:form>
+                            <h:commandButton styleClass="logout_button" icon="pi-sign-out"
+                                             action="#{indexController.logout}"
+                                             value="Logout"/>
+                        </h:form>
+                    </div>
+
+                    <div class="file_catalog">
+                        <h:form>
+                            <p:growl id="msgs" showDetail="true" escape="false"/>
+
+                            <p:tree value="#{indexController.root}" var="doc"
+                                    selectionMode="single"
+                                    selection="#{indexController.selectedNode}">
+                                <p:treeNode expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="app" icon="pi pi-save">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="document" icon="pi pi-file">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="excel" icon="pi pi-file-excel">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="travel" icon="pi pi-file-pdf">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="picture" icon="pi pi-image">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="video" icon="pi pi-video">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                            </p:tree>
+
+                            <!--                <p:commandButton value="Display" update="msgs" icon="pi pi-clone" styleClass="p-mt-3"-->
+                            <!--                                 action="#{treeSelectionView.displaySelectedSingle}"/>-->
+                        </h:form>
+                    </div>
+                </div>
 
 
-        <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
-                  resizable="false">
-            <i class="pi pi-spinner pi-spin" style="font-size:3rem"/>
-        </p:dialog>
+                <div class="right_content">
+
+                    <p:growl id="messages" showDetail="true"/>
+
+                    <!--        Upload-->
+                    <div class="upload">
+                        <h:form>
+                            <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced"
+                                          update="messages" id="fileupload" auto="true"/>
+                        </h:form>
+                    </div>
+
+                    <div class="management_buttons">
 
 
-        <h:form id="files_form" enctype="multipart/form-data" method="POST">
-            <p:dataTable id="eventsDT" var="file" value="#{indexController.fileList}" selectionMode="single"
-                         selection="#{indexController.selectedFile}" rowKey="#{file.id}">
+                        <div class="11111111">
+                            <!--        Logout-->
+                            <div class="logout">
 
-                <p:ajax event="rowSelect" listener="#{indexController.onRowSelect}" update="messages eventsDT"/>
-                <p:ajax event="rowUnselect" listener="#{indexController.onRowUnselect}" update="messages eventsDT"/>
+                            </div>
 
-                <p:column headerText="Name">
-                    <h:outputText value="#{file.name}"/>
-                </p:column>
-
-                <p:column headerText="Type">
-                    <h:outputText value="#{file.type}"/>
-                </p:column>
-
-                <p:column headerText="Size">
-                    <h:outputText value="#{file.size}"/>
-                </p:column>
-
-                <p:column headerText="Download">
-                    <p:commandButton icon="pi pi-cloud-download" styleClass="rounded-button ui-button-flat"
-                                     onclick="PrimeFaces.monitorDownload(start, stop)">
-                        <p:fileDownload value="#{indexController.fileDownload}"/>
-                    </p:commandButton>
-                </p:column>
-
-<!--            Delete-->
-                <p:column headerText="Delete">
-                    <p:commandButton type="button" icon="pi pi-times"
-                                     styleClass="rounded-button ui-button-danger ui-button-flat"
-                                     action="#{indexController.deleteSelectedFile}">
-                        <f:ajax event="click" render="eventsDT"/>
-                    </p:commandButton>
-                </p:column>
+                        </div>
 
 
-            </p:dataTable>
+                    </div>
 
-        </h:form>
+                    <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
+                              resizable="false">
+                        <i class="pi pi-spinner pi-spin" style="font-size:3rem"/>
+                    </p:dialog>
 
 
+                    <h:form id="files_form" enctype="multipart/form-data" method="POST">
+                        <p:dataTable id="eventsDT" var="file" value="#{indexController.fileList}" selectionMode="single"
+                                     selection="#{indexController.selectedFile}" rowKey="#{file.id}" rendered="true">
+                            <p:autoUpdate on="update"/>
+
+                            <p:ajax event="rowSelect" listener="#{indexController.onRowSelect}"
+                                    update="messages eventsDT"/>
+                            <p:ajax event="rowUnselect" listener="#{indexController.onRowUnselect}"
+                                    update="messages eventsDT"/>
+
+                            <p:column headerText="Name">
+                                <h:outputText value="#{file.name}"/>
+                            </p:column>
+
+                            <p:column headerText="Type">
+                                <h:outputText value="#{file.type}"/>
+                            </p:column>
+
+                            <p:column headerText="Size">
+                                <h:outputText value="#{file.size}"/>
+                            </p:column>
+
+                            <p:column headerText="Download">
+                                <p:commandButton icon="pi pi-cloud-download" styleClass="rounded-button ui-button-flat"
+                                                 onclick="PrimeFaces.monitorDownload(start, stop)">
+                                    <p:fileDownload value="#{indexController.fileDownload}"/>
+                                </p:commandButton>
+                            </p:column>
+
+                            <!--            Delete-->
+                            <p:column headerText="Delete">
+                                <p:commandButton type="button" icon="pi pi-times"
+                                                 styleClass="rounded-button ui-button-danger ui-button-flat"
+                                                 action="#{indexController.deleteSelectedFile}">
+                                    <f:ajax event="click" render="eventsDT"/>
+                                </p:commandButton>
+                            </p:column>
+
+
+                        </p:dataTable>
+
+
+                    </h:form>
+
+                </div>
+
+            </div>
+
+        </div>
     </div>
 
+    <footer class="footer">
+
+        <div>
+            <p>© 2021 Cloud Storage Inc. All rights reserved</p>
+        </div>
+
+        <div>
+            <p><a href="">Privacy policy</a></p>
+        </div>
+    </footer>
 
 </h:body>
 

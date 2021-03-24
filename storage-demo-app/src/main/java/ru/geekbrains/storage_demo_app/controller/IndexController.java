@@ -1,14 +1,16 @@
 package ru.geekbrains.storage_demo_app.controller;
 
-import org.primefaces.PrimeFaces;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.event.UnselectEvent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
 import org.primefaces.model.file.UploadedFiles;
 import ru.geekbrains.storage_demo_app.entities.DownloadFile;
 import ru.geekbrains.storage_demo_app.entities.File;
+import ru.geekbrains.storage_demo_app.entities.Folder;
 import ru.geekbrains.storage_demo_app.service.FileProcess;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +38,8 @@ public class IndexController implements Serializable {
     private final List<File> fileBuffer = new ArrayList<>();
     private File selectedFile;
     private StreamedContent downloadFile;
+    private TreeNode root;
+    private TreeNode selectedNode;
 
     @Inject
     private HttpSession httpSession;
@@ -43,7 +47,38 @@ public class IndexController implements Serializable {
 
     @PostConstruct
     public void init() {
+
+
+        root = createDocuments();
+
+
+
+
         fileList = fileProcess.getFiles();
+    }
+
+
+    public TreeNode createDocuments() {
+        TreeNode root = new DefaultTreeNode(new Folder("Files", "Folder"), null);
+        TreeNode applications = new DefaultTreeNode(new Folder("Applications", "Folder"), root);
+        TreeNode cloud = new DefaultTreeNode(new Folder("Cloud", "Folder"), root);
+        TreeNode desktop = new DefaultTreeNode(new Folder("Desktop", "Folder"), root);
+        TreeNode documents = new DefaultTreeNode(new Folder("Documents", "Folder"), root);
+        TreeNode downloads = new DefaultTreeNode(new Folder("Downloads", "Folder"), root);
+        TreeNode main = new DefaultTreeNode(new Folder("Main", "Folder"), root);
+        TreeNode other = new DefaultTreeNode(new Folder("Other", "Folder"), root);
+        TreeNode pictures = new DefaultTreeNode(new Folder("Pictures", "Folder"), root);
+        TreeNode videos = new DefaultTreeNode(new Folder("Videos", "Folder"), root);
+
+
+        TreeNode primeface = new DefaultTreeNode(new Folder("Primefaces", "Folder"), applications);
+        TreeNode primefacesapp = new DefaultTreeNode("app", new Folder("primefaces.app", "Application"), cloud);
+        TreeNode nativeapp = new DefaultTreeNode("app", new Folder("native.app", "Application"), desktop);
+        TreeNode mobileapp = new DefaultTreeNode("app", new Folder("mobile.app", "Application"), documents);
+        TreeNode editorapp = new DefaultTreeNode("app", new Folder("editor.app", "Application"), downloads);
+        TreeNode settingsapp = new DefaultTreeNode("app", new Folder("settings.app", "Application"), pictures);
+        return root;
+
     }
 
     public String logout() {
@@ -139,5 +174,20 @@ public class IndexController implements Serializable {
         this.selectedFile = selectedFile;
     }
 
+    public TreeNode getRoot() {
+        return root;
+    }
+
+    public void setRoot(TreeNode root) {
+        this.root = root;
+    }
+
+    public TreeNode getSelectedNode() {
+        return selectedNode;
+    }
+
+    public void setSelectedNode(TreeNode selectedNode) {
+        this.selectedNode = selectedNode;
+    }
 }
 

@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body{
+    font-family: "Century Gothic", serif;
+}
+.container {
+    width: 600px;
+    margin: 0 auto;
+}
+
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+._top{
+    flex-grow: 1;
+}
+
+a{
+    color: white;
+}
+
+a:hover{
+    color: lightgoldenrodyellow;
+}
+
+.content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid darkgray;
+    margin-top: 250px;
+    padding: 50px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    background-color: white;
+    justify-content: space-around;
+}
+
+.heading{
+    color: #3e3e3e;
+    font-weight: normal;
+}
+
+.cloud_storage_logo{
+    color: #3e3e3e;
+    font-weight: normal;
+    padding-bottom: 25px;
+}
+
+.cloud_storage{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.management_buttons{
+    display: flex;
+
+}
+
+
+
+.file_catalog{
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+
+}
+
+.input_heading{
+    padding: 10px;
+    color: darkgray;
+    font-style: inherit;
+    font-weight: normal;
+
+}
+
+.input_field{
+    width: 250px;
+    padding: 10px;
+    border: 1px solid darkgray;
+    background-color: whitesmoke;
+    border-radius: 3px;
+    margin: 10px;
+    font-size: 22px;
+    outline: none;
+    color: #262626;
+    font-weight: normal;
+}
+
+
+.logout_button{
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: normal;
+    color: #0077ea;
+    outline: none;
+    border: none;
+    box-shadow: lavender;
+    border-radius: 3px;
+    padding: 10px;
+    margin-bottom: 25px;
+}
+
+.logout_button:hover{
+    color: #469bef;
+}
+
+
+.button{
+    width: 250px;
+    background-color: dodgerblue;
+    cursor: pointer;
+    margin: 10px;
+    font-size: 24px;
+    font-weight: normal;
+    font-optical-sizing: inherit;
+    color: whitesmoke;
+    outline: none;
+    border: none;
+    box-shadow: lavender;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.button:hover{
+    background-color: #0077ea;
+}
+
+.main_content{
+    display: flex;
+    background-color: white;
+}
+
+.left_content{
+    padding: 25px;
+    margin: 0;
+    flex-grow: 2;
+    min-width: 400px;
+    background-color: whitesmoke;
+    border: 1px solid lightgray;
+    height: 100vh;
+}
+
+.right_content{
+    flex-grow: 1;
+    padding: 25px;
+    height: 100vh;
+
+}
+
+.footer{
+    display: flex;
+    justify-content: space-around;
+    min-height: 250px;
+    color: white;
+    background-color: #0077ea;
+    align-items: center;
+}
