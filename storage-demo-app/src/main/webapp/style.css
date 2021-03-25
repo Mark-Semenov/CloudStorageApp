@@ -135,6 +135,7 @@ a:hover{
 .main_content{
     display: flex;
     background-color: white;
+    height: 100%;
 }
 
 .left_content{
@@ -144,13 +145,13 @@ a:hover{
     min-width: 400px;
     background-color: whitesmoke;
     border: 1px solid lightgray;
-    height: 100vh;
+
 }
 
 .right_content{
     flex-grow: 1;
     padding: 25px;
-    height: 100vh;
+
 
 }
 
