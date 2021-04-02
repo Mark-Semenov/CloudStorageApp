@@ -7,7 +7,6 @@ import java.util.Set;
 
 
 @NamedQueries({
-        @NamedQuery(name = "GET_USERS", query ="from User"),
         @NamedQuery(name = "CHECK_USER", query = "from User u where u.login = :login and u.password = :password"),
         @NamedQuery(name = "GET_USER_BY_ID", query = "from User u where u.id = :id"),
         @NamedQuery(name = "GET_USER_BY_LOGIN", query = "from User u where u.login = :login"),
@@ -15,32 +14,21 @@ import java.util.Set;
 })
 
 @Entity
-@Table (name = "users")
+@Table(name = "users")
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String firstName;
-    private String lastName;
     private String login;
     private String password;
-    private int age;
 
-    @OneToMany
-    @JoinColumn (name = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<Folder> folders;
 
-    @OneToMany
-    @JoinColumn (name = "user_id")
-    private List<File> files;
 
-
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
@@ -53,28 +41,14 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String firstName, String lastName, String login, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+
+    public User(String login, String password) {
         this.login = login;
         this.password = password;
     }
 
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public User(Set<Role> roles) {
+        this.roles = roles;
     }
 
     public String getLogin() {
@@ -93,18 +67,9 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public Long getId() {
         return id;
@@ -126,12 +91,5 @@ public class User implements Serializable {
         this.roles = roles;
     }
 
-    public List<File> getFiles() {
-        return files;
-    }
-
-    public void setFiles(List<File> files) {
-        this.files = files;
-    }
 }
 

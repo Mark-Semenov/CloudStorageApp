@@ -2,33 +2,35 @@
     margin: 0;
     padding: 0;
 }
-body{
+
+body {
     font-family: "Century Gothic", serif;
 }
+
 .container {
     width: 600px;
     margin: 0 auto;
 }
 
-.wrapper{
+.wrapper {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+
 }
 
-._top{
+._top {
     flex-grow: 1;
 }
 
-a{
+a {
     color: white;
 }
 
-a:hover{
+a:hover {
     color: lightgoldenrodyellow;
 }
 
-.content{
+.content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,38 +43,50 @@ a:hover{
     justify-content: space-around;
 }
 
-.heading{
+.reg_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid darkgray;
+    margin-top: 250px;
+    padding: 25px;
+    box-sizing: border-box;
+    border-radius: 3px;
+    background-color: white;
+    text-align: left;
+}
+
+.heading {
     color: #3e3e3e;
     font-weight: normal;
 }
 
-.cloud_storage_logo{
+.cloud_storage_logo {
     color: #3e3e3e;
     font-weight: normal;
     padding-bottom: 25px;
 }
 
-.cloud_storage{
+.cloud_storage {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.management_buttons{
+.management_buttons {
     display: flex;
 
 }
 
 
-
-.file_catalog{
+.file_catalog {
     padding: 0;
     margin: 0;
     height: 100vh;
 
 }
 
-.input_heading{
+.input_heading {
     padding: 10px;
     color: darkgray;
     font-style: inherit;
@@ -80,7 +94,7 @@ a:hover{
 
 }
 
-.input_field{
+.input_field {
     width: 250px;
     padding: 10px;
     border: 1px solid darkgray;
@@ -94,7 +108,7 @@ a:hover{
 }
 
 
-.logout_button{
+.logout_button {
     cursor: pointer;
     font-size: 18px;
     font-weight: normal;
@@ -107,12 +121,27 @@ a:hover{
     margin-bottom: 25px;
 }
 
-.logout_button:hover{
+.logout_button:hover {
     color: #469bef;
 }
 
+.nav {
+    display: flex;
+    justify-content: space-between;
 
-.button{
+}
+
+.reg_link {
+    color: #0077ea;
+    margin-left: 20px;
+}
+
+.reg_link:hover {
+    color: #003a6e;
+}
+
+
+.button {
     width: 250px;
     background-color: dodgerblue;
     cursor: pointer;
@@ -128,17 +157,16 @@ a:hover{
     padding: 10px;
 }
 
-.button:hover{
+.button:hover {
     background-color: #0077ea;
 }
 
-.main_content{
+.main_content {
     display: flex;
     background-color: white;
-    height: 100%;
 }
 
-.left_content{
+.left_content {
     padding: 25px;
     margin: 0;
     flex-grow: 2;
@@ -148,18 +176,33 @@ a:hover{
 
 }
 
-.right_content{
-    flex-grow: 1;
+.right_content {
     padding: 25px;
+}
 
+.crud {
+    display: flex;
 
 }
 
-.footer{
+.create_folder {
+    padding: 25px;
+}
+
+.footer {
     display: flex;
     justify-content: space-around;
-    min-height: 250px;
+    min-height: 200px;
     color: white;
     background-color: #0077ea;
     align-items: center;
+}
+
+.copyright {
+
+}
+
+.policy {
+
+
 }

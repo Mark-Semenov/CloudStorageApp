@@ -6,8 +6,7 @@ import ru.geekbrains.storage_demo_app.entities.User;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
+import javax.transaction.Transactional;
 
 @Stateless
 public class UserDAO {
@@ -15,15 +14,13 @@ public class UserDAO {
     @PersistenceContext (unitName = "ps")
     EntityManager entityManager;
 
+    @Transactional
     public void createOrUpdateUser(User user){
-        if(user.getId() == null){
+        if(user.getId() != null){
             entityManager.merge(user);
         } else entityManager.persist(user);
     }
 
-    public List<User> getUsers(){
-        return entityManager.createNamedQuery("GET_USERS", User.class).getResultList();
-    }
 
     public User getUserById(Long id){
         return entityManager.find(User.class, id);
@@ -36,5 +33,6 @@ public class UserDAO {
     public User getUserByLogin(String login){
         return entityManager.createNamedQuery("GET_USER_BY_LOGIN", User.class).setParameter("login", login).getSingleResult();
     }
+
 
 }

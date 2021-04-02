@@ -5,6 +5,7 @@ import ru.geekbrains.storage_demo_app.entities.File;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Stateful
@@ -13,11 +14,7 @@ public class FileDao {
     @PersistenceContext(unitName = "ps")
     EntityManager entityManager;
 
-
-    public List<File> getAllFiles() {
-        return entityManager.createNamedQuery("GET_FILES", File.class).getResultList();
-    }
-
+    @Transactional
     public void writeFile(File file) {
         entityManager.persist(file);
     }
@@ -27,17 +24,12 @@ public class FileDao {
     }
 
 
-    public List<File> getFilesByUserId(Long id) {
-        return entityManager.createNamedQuery("GET_FILES_BY_USER_ID", File.class).setParameter("id", id).getResultList();
-    }
-
-    public List<File> getFilesByUserName(String login) {
-        return entityManager.createNamedQuery("GET_FILES_BY_USER_NAME", File.class).setParameter("login", login).getResultList();
-    }
-
-
     public void deleteFileById(Long id) {
         entityManager.remove(getFileById(id));
+    }
+
+    public List<File> getFilesByFolderId(Long id){
+        return entityManager.createNamedQuery("GET_FILES_BY_FOLDER_ID", File.class).setParameter("id", id).getResultList();
     }
 
 

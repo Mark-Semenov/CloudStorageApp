@@ -1,8 +1,7 @@
 package ru.geekbrains.storage_demo_app.controller;
 
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.event.SelectEvent;
-import org.primefaces.event.UnselectEvent;
+import org.primefaces.PrimeFaces;
+import org.primefaces.event.*;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
@@ -15,6 +14,7 @@ import ru.geekbrains.storage_demo_app.service.FileProcess;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -34,56 +34,36 @@ public class IndexController implements Serializable {
 
     private UploadedFile file;
     private UploadedFiles files;
-    private List<File> fileList;
+    private List<File> userFiles;
     private final List<File> fileBuffer = new ArrayList<>();
     private File selectedFile;
     private StreamedContent downloadFile;
     private TreeNode root;
     private TreeNode selectedNode;
+    private Folder selectedFolder;
+    private List<Folder> userFolders;
+    private String newFolderName;
+    private Folder rootFolder;
+    private List<File> fileList;
 
     @Inject
     private HttpSession httpSession;
 
-
     @PostConstruct
     public void init() {
 
-
-        root = createDocuments();
-
-
-
-
-        fileList = fileProcess.getFiles();
-    }
-
-
-    public TreeNode createDocuments() {
-        TreeNode root = new DefaultTreeNode(new Folder("Files", "Folder"), null);
-        TreeNode applications = new DefaultTreeNode(new Folder("Applications", "Folder"), root);
-        TreeNode cloud = new DefaultTreeNode(new Folder("Cloud", "Folder"), root);
-        TreeNode desktop = new DefaultTreeNode(new Folder("Desktop", "Folder"), root);
-        TreeNode documents = new DefaultTreeNode(new Folder("Documents", "Folder"), root);
-        TreeNode downloads = new DefaultTreeNode(new Folder("Downloads", "Folder"), root);
-        TreeNode main = new DefaultTreeNode(new Folder("Main", "Folder"), root);
-        TreeNode other = new DefaultTreeNode(new Folder("Other", "Folder"), root);
-        TreeNode pictures = new DefaultTreeNode(new Folder("Pictures", "Folder"), root);
-        TreeNode videos = new DefaultTreeNode(new Folder("Videos", "Folder"), root);
-
-
-        TreeNode primeface = new DefaultTreeNode(new Folder("Primefaces", "Folder"), applications);
-        TreeNode primefacesapp = new DefaultTreeNode("app", new Folder("primefaces.app", "Application"), cloud);
-        TreeNode nativeapp = new DefaultTreeNode("app", new Folder("native.app", "Application"), desktop);
-        TreeNode mobileapp = new DefaultTreeNode("app", new Folder("mobile.app", "Application"), documents);
-        TreeNode editorapp = new DefaultTreeNode("app", new Folder("editor.app", "Application"), downloads);
-        TreeNode settingsapp = new DefaultTreeNode("app", new Folder("settings.app", "Application"), pictures);
-        return root;
+        fileList = new ArrayList<>();
+        rootFolder = fileProcess.getRootUserFolder();
+        userFolders = fileProcess.getUserFolders();
+        userFiles = fileProcess.getFiles();
+        root = fileProcess.getTreeViewRoot();
 
     }
+
 
     public String logout() {
         httpSession.invalidate();
-        return "/authentication.xhtml?faces-redirect=true";
+        return "/authentication.xhtml";
     }
 
 
@@ -96,6 +76,16 @@ public class IndexController implements Serializable {
             downloadFile = null;
         }
     }
+
+
+    public DefaultTreeNode createFolder() {
+        Folder folder = new Folder(newFolderName, "Folder");
+        folder.setParent(selectedFolder != null ? selectedFolder : rootFolder);
+        fileProcess.createFolder(folder);
+        PrimeFaces.current().executeScript("PF('manageFolderDialog').hide()");
+        return new DefaultTreeNode(folder, selectedNode != null ? selectedNode : root);
+    }
+
 
     public File findFile(Long id) {
         return fileProcess.findFileById(id);
@@ -111,35 +101,70 @@ public class IndexController implements Serializable {
         return downloadFile;
     }
 
+
     public void handleFileUpload(FileUploadEvent event) {
-        UploadedFile upFile = event.getFile();
-        File file = new File(upFile.getFileName(), upFile.getContentType(), upFile.getContent(), upFile.getSize());
+        UploadedFile uploadedFile = event.getFile();
+        File file = new File(uploadedFile.getFileName(), uploadedFile.getContentType(), uploadedFile.getContent(), uploadedFile.getSize());
+        file.setFolder(selectedFolder != null ? selectedFolder : rootFolder);
         fileBuffer.add(file);
+        PrimeFaces.current().ajax().update("files_form:eventsDT");
         FacesMessage message = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, message);
         fileProcess.upload(fileBuffer);
     }
 
+
+    public void deleteSelectedFolder(){
+        fileProcess.deleteFolder(selectedFolder);
+    }
+
     public void onRowSelect(SelectEvent<File> event) {
         selectedFile = event.getObject();
-        FacesMessage msg = new FacesMessage("File Selected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage("File Selected", String.valueOf(event.getObject().getName()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
     public void onRowUnselect(UnselectEvent<File> event) {
         selectedFile = null;
         downloadFile = null;
-        FacesMessage msg = new FacesMessage("File Unselected", String.valueOf(event.getObject().getId()));
+        FacesMessage msg = new FacesMessage("File Unselected", String.valueOf(event.getObject().getName()));
         FacesContext.getCurrentInstance().addMessage(null, msg);
     }
 
 
-    public List<File> getFileList() {
-        return fileList;
+    public void onNodeExpand(NodeExpandEvent event) {
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Expanded", event.getTreeNode().toString());
+        FacesContext.getCurrentInstance().addMessage(null, message);
     }
 
-    public void setFileList(List<File> fileList) {
-        this.fileList = fileList;
+    public void onNodeCollapse(NodeCollapseEvent event) {
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Collapsed", event.getTreeNode().toString());
+        FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    public void onNodeSelect(NodeSelectEvent event) {
+        selectedNode = event.getTreeNode();
+        selectedFolder = fileProcess.findFolder((Folder) event.getTreeNode().getData());
+        userFiles = selectedFolder.getFiles();
+        PrimeFaces.current().ajax().update("files_form:eventsDT");
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Selected", event.getTreeNode().getData().toString());
+        FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    public void onNodeUnselect(NodeUnselectEvent event) {
+        userFiles = fileProcess.getFiles();
+        selectedFolder = null;
+        PrimeFaces.current().ajax().update("files_form:eventsDT");
+        FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Unselected", event.getTreeNode().toString());
+        FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+    public List<File> getUserFiles() {
+        return userFiles;
+    }
+
+    public void setUserFiles(List<File> userFiles) {
+        this.userFiles = userFiles;
     }
 
     public UploadedFile getFile() {
@@ -188,6 +213,22 @@ public class IndexController implements Serializable {
 
     public void setSelectedNode(TreeNode selectedNode) {
         this.selectedNode = selectedNode;
+    }
+
+    public Folder getSelectedFolder() {
+        return selectedFolder;
+    }
+
+    public void setSelectedFolder(Folder selectedFolder) {
+        this.selectedFolder = selectedFolder;
+    }
+
+    public String getNewFolderName() {
+        return newFolderName;
+    }
+
+    public void setNewFolderName(String newFolderName) {
+        this.newFolderName = newFolderName;
     }
 }
 

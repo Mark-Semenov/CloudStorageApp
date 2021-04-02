@@ -26,8 +26,8 @@
             <web-resource-name>Allow resources</web-resource-name>
             <url-pattern>/registration.xhtml</url-pattern>
             <url-pattern>/javax.faces.resource/*</url-pattern>
-            <url-pattern>/primeflex.min.css</url-pattern>
             <url-pattern>/style.css</url-pattern>
+            <url-pattern>/reg.xhtml</url-pattern>
         </web-resource-collection>
 
         <user-data-constraint>
@@ -43,6 +43,7 @@
             <form-error-page>/authentication.xhtml</form-error-page>
         </form-login-config>
     </login-config>
+
 
     <security-role>
         <role-name>user</role-name>

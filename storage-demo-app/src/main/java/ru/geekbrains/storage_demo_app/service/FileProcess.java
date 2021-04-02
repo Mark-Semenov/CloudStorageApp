@@ -1,5 +1,6 @@
 package ru.geekbrains.storage_demo_app.service;
 
+import org.primefaces.model.TreeNode;
 import ru.geekbrains.storage_demo_app.DAO.FileDao;
 import ru.geekbrains.storage_demo_app.DAO.FolderDAO;
 import ru.geekbrains.storage_demo_app.DAO.UserDAO;
@@ -14,7 +15,8 @@ import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
-import java.io.*;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,19 +38,35 @@ public class FileProcess {
     @Resource
     private SessionContext sessionContext;
 
+
     private User user;
 
+    private Folder rootUserFolder;
+
+    private List<Folder> userFolders;
+
+    private TreeNode treeViewRoot;
 
     @PostConstruct
     public void init() {
+
         this.user = userDAO.getUserByLogin(sessionContext.getCallerPrincipal().getName());
+        userFolders = folderDAO.getFoldersByUserId(this.user.getId());
+        if (userFolders.isEmpty()) {
+            rootUserFolder = new Folder("Root", "Folder");
+            rootUserFolder.setUser(this.user);
+            createFolder(rootUserFolder);
+        } else rootUserFolder = findRootFolder(this.user.getId());
+
+        treeViewRoot = new TreeMaker(userFolders).getView();
+
     }
 
-    @TransactionAttribute
+
     public void upload(List<File> files) {
         File f = new File();
-        f.setUser(this.user);
         for (File file : files) {
+            f.setFolder(file.getFolder());
             f.setName(file.getName());
             f.setSize(file.getSize());
             f.setContent(file.getContent());
@@ -58,45 +76,54 @@ public class FileProcess {
         }
     }
 
-    public void deleteFile(Long id) {
+    @TransactionAttribute
+    public void deleteFile(@NotNull Long id) {
         File file = fileDao.getFileById(id);
         deleteFileFromHDD(file);
         fileDao.deleteFileById(id);
     }
 
     public List<File> getFiles() {
-        if (!sessionContext.isCallerInRole("user")) {
-            throw new SecurityException("роль не задана");
-        } else return fileDao.getFilesByUserName(user.getLogin());
+        return fileDao.getFilesByFolderId(rootUserFolder.getId());
     }
 
 
-    public File download(Long id) {
+    public List<Folder> getFolders() {
+        return folderDAO.getFoldersByUserId(user.getId());
+    }
+
+
+    public File findFileById(@NotNull Long id) {
         return fileDao.getFileById(id);
     }
 
-    public File findFileById(Long id) {
-        return fileDao.getFileById(id);
+    public Folder findFolder(Folder folder) {
+        return folderDAO.getFolderById(folder.getId());
     }
 
-
-    public void createFolder(Folder folder) {
+    @TransactionAttribute
+    public void createFolder(@NotNull Folder folder) {
+        folder.setUser(this.user);
         folderDAO.createFolder(folder);
     }
 
-
-    public List<File> showUserFiles(Long userId) {
-        return fileDao.getFilesByUserId(userId);
+    @TransactionAttribute
+    public void deleteFolder (@NotNull Folder folder){
+        folderDAO.deleteFolder(folder);
     }
 
-    public List<File> showUserFilesByName(String login) {
-        return fileDao.getFilesByUserName(login);
+    public Folder findRootFolder(@NotNull Long userId) {
+        return folderDAO.getRootFolder(userId);
+    }
+
+    public void updateFolder(Folder folder) {
+        folderDAO.updateFolder(folder);
     }
 
 
     //Запись на диск в директорию с именем <Логин> пользователя
 
-    public void writeFileAtHDD(File file) {
+    public void writeFileAtHDD(@NotNull File file) {
 
         Path folderPats = Paths.get("D:\\" + user.getLogin());
         Path filePath = Paths.get("D:\\" + user.getLogin() + "\\" + file.getName());
@@ -114,8 +141,7 @@ public class FileProcess {
     }
 
     //Удаление файла
-    public void deleteFileFromHDD(File file) {
-
+    public void deleteFileFromHDD(@NotNull File file) {
         Path path = Paths.get("D:\\" + user.getLogin() + "\\" + file.getName());
         try {
             if (Files.exists(path)) {
@@ -124,5 +150,34 @@ public class FileProcess {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Folder getRootUserFolder() {
+        return rootUserFolder;
+    }
+
+    public void setRootUserFolder(Folder rootUserFolder) {
+        this.rootUserFolder = rootUserFolder;
+    }
+
+    public List<Folder> getUserFolders() {
+        return userFolders;
+    }
+
+    public void setUserFolders(List<Folder> userFolders) {
+        this.userFolders = userFolders;
+    }
+
+    public TreeNode getTreeViewRoot() {
+        return treeViewRoot;
     }
 }

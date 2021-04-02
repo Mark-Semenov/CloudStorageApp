@@ -4,10 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @NamedQueries({
-
-        @NamedQuery(name = "GET_FILES", query = "from File"),
-        @NamedQuery(name = "GET_FILES_BY_USER_ID", query = "from File f inner join User u on f.user.id = u.id where u.id = :id"),
-        @NamedQuery(name = "GET_FILES_BY_USER_NAME", query = "select f from File f inner join User u on f.user.id = u.id where u.login = :login"),
+        @NamedQuery(name = "GET_FILES_BY_FOLDER_ID", query = "select f from File f where f.folder.id = :id"),
 })
 
 
@@ -27,8 +24,10 @@ public class File implements Serializable {
     @Transient
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne
-    private User user;
+
+    @ManyToOne (fetch = FetchType.EAGER)
+    @JoinColumn (name = "folder_id")
+    private Folder folder;
 
     public File() {
     }
@@ -40,15 +39,6 @@ public class File implements Serializable {
         this.size = size;
     }
 
-    public File(Long id, String name, byte[] content) {
-        this.id = id;
-        this.name = name;
-        this.content = content;
-    }
-
-    public File(String name) {
-        this.name = name;
-    }
 
     public File(String name, String type) {
         this.name = name;
@@ -95,11 +85,20 @@ public class File implements Serializable {
         this.size = size;
     }
 
-    public User getUser() {
-        return user;
+    public Folder getFolder() {
+        return folder;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setFolder(Folder folder) {
+        this.folder = folder;
+    }
+
+
+    @Override
+    public String toString() {
+        return "File{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
