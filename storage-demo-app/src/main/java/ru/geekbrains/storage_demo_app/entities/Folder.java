@@ -25,7 +25,7 @@ public class Folder implements Serializable {
     private Long size;
     private String icon;
 
-    @ManyToOne
+    @ManyToOne (cascade = CascadeType.REMOVE)
     private User user;
 
     @OneToMany (fetch = FetchType.EAGER)
