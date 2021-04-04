@@ -7,6 +7,8 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Stateless
 public class UserDAO {
@@ -14,11 +16,10 @@ public class UserDAO {
     @PersistenceContext (unitName = "ps")
     EntityManager entityManager;
 
+
     @Transactional
-    public void createOrUpdateUser(User user){
-        if(user.getId() != null){
-            entityManager.merge(user);
-        } else entityManager.persist(user);
+    public void addUser(@NotNull User user){
+        entityManager.persist(user);
     }
 
 
@@ -32,6 +33,10 @@ public class UserDAO {
 
     public User getUserByLogin(String login){
         return entityManager.createNamedQuery("GET_USER_BY_LOGIN", User.class).setParameter("login", login).getSingleResult();
+    }
+
+    public List<User> getAllUsers(){
+        return entityManager.createNamedQuery("GET_USERS", User.class).getResultList();
     }
 
 

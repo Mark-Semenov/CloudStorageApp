@@ -5,12 +5,9 @@
 
 body {
     font-family: "Century Gothic", serif;
+    background-color: whitesmoke;
 }
 
-.container {
-    width: 600px;
-    margin: 0 auto;
-}
 
 .wrapper {
     display: flex;
@@ -30,30 +27,37 @@ a:hover {
     color: lightgoldenrodyellow;
 }
 
+.container {
+    width: 500px;
+    margin: 0 auto;
+}
+
+.auth_ {
+    margin-top: 50%;
+    width: 400px;
+}
+
 .content {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: 1px solid darkgray;
-    margin-top: 250px;
-    padding: 50px;
-    box-sizing: border-box;
-    border-radius: 3px;
-    background-color: white;
     justify-content: space-around;
+    align-items: center;
+    background-color: white;
+    border: 1px darkgrey solid;
+    border-radius: 3px;
+    height: 400px;
+    width: 400px;
 }
 
 .reg_content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 1px solid darkgray;
     margin-top: 250px;
-    padding: 25px;
+    padding: 35px;
     box-sizing: border-box;
     border-radius: 3px;
-    background-color: white;
-    text-align: left;
+    background-color: whitesmoke;
+
 }
 
 .heading {
@@ -87,65 +91,53 @@ a:hover {
 }
 
 .input_heading {
-    padding: 10px;
     color: darkgray;
     font-style: inherit;
     font-weight: normal;
+    margin-top: 25px;
 
 }
 
 .input_field {
     width: 250px;
-    padding: 10px;
+    height: 50px;
     border: 1px solid darkgray;
     background-color: whitesmoke;
     border-radius: 3px;
-    margin: 10px;
-    font-size: 22px;
+    font-size: 26px;
     outline: none;
-    color: #262626;
-    font-weight: normal;
-}
+    padding-left: 10px;
 
 
-.logout_button {
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: normal;
-    color: #0077ea;
-    outline: none;
-    border: none;
-    box-shadow: lavender;
-    border-radius: 3px;
-    padding: 10px;
-    margin-bottom: 25px;
 }
+
 
 .logout_button:hover {
     color: #469bef;
 }
 
 .nav {
-    display: flex;
-    justify-content: space-between;
 
 }
 
+
 .reg_link {
     color: #0077ea;
-    margin-left: 20px;
 }
 
 .reg_link:hover {
     color: #003a6e;
 }
 
+.button_log {
+    margin-top: 25px;
+}
 
 .button {
     width: 250px;
+    height: 50px;
     background-color: dodgerblue;
     cursor: pointer;
-    margin: 10px;
     font-size: 24px;
     font-weight: normal;
     font-optical-sizing: inherit;
@@ -154,7 +146,7 @@ a:hover {
     border: none;
     box-shadow: lavender;
     border-radius: 3px;
-    padding: 10px;
+
 }
 
 .button:hover {
@@ -181,7 +173,7 @@ a:hover {
 }
 
 .crud {
-    display: flex;
+
 
 }
 

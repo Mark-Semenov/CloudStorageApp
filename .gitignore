@@ -2,7 +2,6 @@
 *.class
 target/
 images/
-resources/
 test/
 .idea/
 out/

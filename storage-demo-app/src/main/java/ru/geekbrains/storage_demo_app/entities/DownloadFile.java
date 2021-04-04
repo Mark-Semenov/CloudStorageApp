@@ -49,4 +49,5 @@ public class DownloadFile implements StreamedContent, Serializable {
     public void setFile(File file) {
         this.file = file;
     }
+
 }

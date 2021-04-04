@@ -5,7 +5,7 @@ import ru.geekbrains.storage_demo_app.entities.Folder;
 import javax.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.validation.constraints.NotNull;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,18 +16,13 @@ public class FolderDAO {
     private EntityManager entityManager;
 
 
+
     public void createFolder(Folder folder) {
         entityManager.persist(folder);
     }
 
     public void updateFolder(Folder folder) {
         entityManager.merge(folder);
-    }
-
-    public void updateFolders(List<Folder> folders) {
-        for (Folder folder : folders) {
-            entityManager.merge(folder);
-        }
     }
 
     public Folder getFolderById(Long id) {
@@ -43,13 +38,10 @@ public class FolderDAO {
         return entityManager.createNamedQuery("GET_ROOT_FOLDER", Folder.class).setParameter("id", id).getSingleResult();
     }
 
-
+    @Transactional
     public void deleteFolder(Folder folder){
-        entityManager.remove(folder);
+        entityManager.remove(entityManager.contains(folder) ? folder : entityManager.merge(folder));
     }
 
-    public void deleteFolderById(@NotNull Folder folder) {
-        entityManager.createNamedQuery("DELETE_FOLDER", Folder.class).setParameter("id", folder.getId()).executeUpdate();
-    }
 
 }

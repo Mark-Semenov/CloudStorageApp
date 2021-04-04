@@ -8,7 +8,6 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "GET_FOLDER_BY_USERID", query = "select f from Folder f inner join User u on f.user.id = u.id where u.id = :id"),
         @NamedQuery(name = "GET_ROOT_FOLDER", query = "select f from Folder f inner join User u on u.id = f.user.id where f.name ='Root' and u.id = :id"),
-        @NamedQuery(name = "DELETE_FOLDER", query = "delete from Folder f where f.id = :id"),
 
 })
 
@@ -20,22 +19,19 @@ public class Folder implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private String path;
     private String type;
-    private Long size;
-    private String icon;
 
-    @ManyToOne (cascade = CascadeType.REMOVE)
+    @ManyToOne
     private User user;
 
-    @OneToMany (fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "folder_id")
     private List<File> files;
 
     @Transient
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_id")
     private Folder parent;
 
@@ -64,28 +60,12 @@ public class Folder implements Serializable {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
     public String getType() {
         return type;
     }
 
     public void setType(String type) {
         this.type = type;
-    }
-
-    public Long getSize() {
-        return size;
-    }
-
-    public void setSize(Long size) {
-        this.size = size;
     }
 
     public List<File> getFiles() {
@@ -110,14 +90,6 @@ public class Folder implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
     }
 
     public Folder getParent() {

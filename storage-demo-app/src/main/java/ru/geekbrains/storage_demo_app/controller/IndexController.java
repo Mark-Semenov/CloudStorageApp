@@ -40,10 +40,9 @@ public class IndexController implements Serializable {
     private TreeNode root;
     private TreeNode selectedNode;
     private Folder selectedFolder;
-    private List<Folder> userFolders;
     private String newFolderName;
     private Folder rootFolder;
-    private List<File> fileList;
+    private String menuItemId;
 
     @Inject
     private HttpSession httpSession;
@@ -51,9 +50,7 @@ public class IndexController implements Serializable {
     @PostConstruct
     public void init() {
 
-        fileList = new ArrayList<>();
         rootFolder = fileProcess.getRootUserFolder();
-        userFolders = fileProcess.getUserFolders();
         userFiles = fileProcess.getFiles();
         root = fileProcess.getTreeViewRoot();
 
@@ -68,7 +65,8 @@ public class IndexController implements Serializable {
 
     public void deleteSelectedFile() {
         if (selectedFile == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage("File isn't selected"));
+            FacesMessage message = new FacesMessage("File", "File isn't selected");
+            FacesContext.getCurrentInstance().addMessage(null, message);
         } else {
             fileProcess.deleteFile(selectedFile.getId());
             selectedFile = null;
@@ -77,12 +75,14 @@ public class IndexController implements Serializable {
     }
 
 
-    public DefaultTreeNode createFolder() {
+    public void createFolder() {
         Folder folder = new Folder(newFolderName, "Folder");
         folder.setParent(selectedFolder != null ? selectedFolder : rootFolder);
         fileProcess.createFolder(folder);
+        new DefaultTreeNode(folder, selectedNode != null ? selectedNode : root);
         PrimeFaces.current().executeScript("PF('manageFolderDialog').hide()");
-        return new DefaultTreeNode(folder, selectedNode != null ? selectedNode : root);
+        PrimeFaces.current().ajax().update("form:tree");
+        newFolderName = null;
     }
 
 
@@ -92,7 +92,7 @@ public class IndexController implements Serializable {
 
     public StreamedContent getFileDownload() {
         if (selectedFile == null) {
-            FacesMessage message = new FacesMessage("File isn't selected");
+            FacesMessage message = new FacesMessage("File", "File isn't selected");
             FacesContext.getCurrentInstance().addMessage(null, message);
         } else {
             downloadFile = new DownloadFile(findFile(selectedFile.getId()));
@@ -106,15 +106,48 @@ public class IndexController implements Serializable {
         File file = new File(uploadedFile.getFileName(), uploadedFile.getContentType(), uploadedFile.getContent(), uploadedFile.getSize());
         file.setFolder(selectedFolder != null ? selectedFolder : rootFolder);
         fileBuffer.add(file);
-        PrimeFaces.current().ajax().update("files_form:eventsDT");
+        PrimeFaces.current().ajax().update("files_table:eventsDT");
         FacesMessage message = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, message);
         fileProcess.upload(fileBuffer);
     }
 
 
-    public void deleteSelectedFolder(){
-        fileProcess.deleteFolder(selectedFolder);
+    public void deleteSelectedFolder() {
+        if (selectedFolder == null) {
+            FacesMessage message = new FacesMessage("Folder", "Folder is not selected");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+        } else {
+            fileProcess.deleteFolder(selectedFolder);
+            root.getChildren().remove(selectedNode);
+            removeNode(root.getChildren(), selectedNode);
+            FacesMessage message = new FacesMessage("Successful", selectedFolder.getName() + " is deleted.");
+            FacesContext.getCurrentInstance().addMessage(null, message);
+            selectedFolder = null;
+            userFiles = null;
+            PrimeFaces.current().ajax().update("form:tree");
+            PrimeFaces.current().ajax().update("files_table:eventsDT");
+        }
+    }
+
+
+    public void removeNode(List<TreeNode> nodes, TreeNode node) {
+        for (TreeNode tr : nodes) {
+            if (tr.getChildren().contains(node)) {
+                tr.getChildren().remove(node);
+            } else {
+                removeNode(tr.getChildren(), node);
+            }
+        }
+    }
+
+    public void renameFolder() {
+        selectedFolder.setName(newFolderName);
+        fileProcess.updateFolder(selectedFolder);
+        PrimeFaces.current().executeScript("PF('renameFolderDialog').hide()");
+        PrimeFaces.current().ajax().update("form:tree");
+        newFolderName = null;
+
     }
 
     public void onRowSelect(SelectEvent<File> event) {
@@ -145,7 +178,7 @@ public class IndexController implements Serializable {
         selectedNode = event.getTreeNode();
         selectedFolder = fileProcess.findFolder((Folder) event.getTreeNode().getData());
         userFiles = selectedFolder.getFiles();
-        PrimeFaces.current().ajax().update("files_form:eventsDT");
+        PrimeFaces.current().ajax().update("files_table:eventsDT");
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Selected", event.getTreeNode().getData().toString());
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
@@ -153,7 +186,7 @@ public class IndexController implements Serializable {
     public void onNodeUnselect(NodeUnselectEvent event) {
         userFiles = fileProcess.getFiles();
         selectedFolder = null;
-        PrimeFaces.current().ajax().update("files_form:eventsDT");
+        PrimeFaces.current().ajax().update("files_table:eventsDT");
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Unselected", event.getTreeNode().toString());
         FacesContext.getCurrentInstance().addMessage(null, message);
     }
@@ -228,6 +261,14 @@ public class IndexController implements Serializable {
 
     public void setNewFolderName(String newFolderName) {
         this.newFolderName = newFolderName;
+    }
+
+    public String getMenuItemId() {
+        return menuItemId;
+    }
+
+    public void setMenuItemId(String menuItemId) {
+        this.menuItemId = menuItemId;
     }
 }
 

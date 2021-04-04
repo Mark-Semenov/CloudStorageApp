@@ -39,12 +39,6 @@ public class File implements Serializable {
         this.size = size;
     }
 
-
-    public File(String name, String type) {
-        this.name = name;
-        this.type = type;
-    }
-
     public Long getId() {
         return id;
     }
