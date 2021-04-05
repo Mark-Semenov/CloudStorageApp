@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+
+<h:head>
+    <f:view contentType="text/html;charset=UTF-8" encoding="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="style.css" rel="stylesheet"/>
+    <title>Cloud Storage</title>
+
+</h:head>
+
+
+<h:body>
+
+    <div class="wrapper">
+        <div class="_top">
+
+
+            <div class="main_content">
+
+                <div class="left_content">
+
+                    <div class="cloud_storage">
+                        <h2 class="cloud_storage_logo">Cloud Storage</h2>
+
+                        <!--                        Logout-->
+                        <h:form>
+                            <h:commandButton styleClass="logout_button" icon="pi-sign-out"
+                                             action="#{indexController.logout}"
+                                             value="Logout"/>
+                        </h:form>
+                    </div>
+
+                    <div class="file_catalog">
+
+
+                        <h:form id="form">
+                            <p:growl id="msgs" showDetail="true"/>
+                            <p:tree value="#{indexController.root}" var="doc" selectionMode="single"
+                                    selection="#{indexController.selectedNode}">
+                                <p:ajax event="expand" update=":form:msgs" listener="#{indexController.onNodeExpand}"/>
+                                <p:ajax event="collapse" update=":form:msgs"
+                                        listener="#{indexController.onNodeCollapse}"/>
+                                <p:ajax event="select" update=":form:msgs" listener="#{indexController.onNodeSelect}"/>
+                                <p:ajax event="unselect" update=":form:msgs"
+                                        listener="#{indexController.onNodeUnselect}"/>
+
+                                <p:treeNode id="treenode" expandedIcon="pi pi-folder-open" collapsedIcon="pi pi-folder">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="app" icon="pi pi-save">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="document" icon="pi pi-file">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="excel" icon="pi pi-file-excel">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="travel" icon="pi pi-file-pdf">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="picture" icon="pi pi-image">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                                <p:treeNode type="video" icon="pi pi-video">
+                                    <h:outputText value="#{doc.name}"/>
+                                </p:treeNode>
+                            </p:tree>
+                        </h:form>
+
+                        <h:form>
+                            <p:dialog header="Input Folder Name" showEffect="fade" modal="true"
+                                      widgetVar="manageFolderDialog" responsive="true">
+                                <p:outputPanel id="manage-folder-content" class="ui-fluid">
+                                    <div class="p-field">
+                                        <p:outputLabel for="name">Name</p:outputLabel>
+                                        <p:inputText id="name" value="#{indexController.newFolderName}"
+                                                     required="true"/>
+                                    </div>
+                                </p:outputPanel>
+
+                                <f:facet name="footer">
+                                    <p:commandButton value="Save" icon="pi pi-check"
+                                                     actionListener="#{indexController.createFolder}"
+                                                     update="manage-folder-content"
+                                                     process="manage-folder-content @this"/>
+                                    <p:commandButton value="Cancel" icon="pi pi-times"
+                                                     onclick="PF('manageProductDialog').hide()"
+                                                     class="ui-button-secondary"/>
+                                </f:facet>
+                            </p:dialog>
+                        </h:form>
+                    </div>
+                </div>
+
+
+                <div class="right_content">
+
+                    <p:growl id="messages" showDetail="true"/>
+
+                    <!--        Upload-->
+                    <div class="upload">
+                        <h:form>
+                            <p:fileUpload listener="#{indexController.handleFileUpload}" mode="advanced"
+                                          update="messages" id="fileupload" auto="true"/>
+                        </h:form>
+                    </div>
+
+                    <!--                    CRUD folder-->
+                    <div class="crud">
+
+                        <h:form>
+                            <p:commandButton type="button" icon="pi pi-folder"
+                                             update=":form:manage-folder-content"
+                                             onclick="PF('manageFolderDialog').show()"/>
+                        </h:form>
+
+                        <h:form>
+                            <p:commandButton type="button" icon="pi pi-times" styleClass="ui-button-danger"
+                                             action="#{indexController.deleteSelectedFolder}"/>
+                            <f:ajax event="click" render="form"/>
+                        </h:form>
+
+                    </div>
+
+                    <div class="management_buttons">
+
+                    </div>
+
+                    <p:dialog modal="true" widgetVar="statusDialog" header="Status" draggable="false" closable="false"
+                              resizable="false">
+                        <i class="pi pi-spinner pi-spin" style="font-size:3rem"/>
+                    </p:dialog>
+
+
+                    <h:form id="files_form" enctype="multipart/form-data" method="POST">
+                        <p:dataTable id="eventsDT" var="file" value="#{indexController.userFiles}"
+                                     selectionMode="single"
+                                     selection="#{indexController.selectedFile}" rowKey="#{file.id}" rendered="true"
+                                     paginator="true"
+                                     rows="10">
+                            <p:autoUpdate on="update"/>
+
+                            <p:ajax event="rowSelect" listener="#{indexController.onRowSelect}"
+                                    update="messages eventsDT"/>
+                            <p:ajax event="rowUnselect" listener="#{indexController.onRowUnselect}"
+                                    update="messages eventsDT"/>
+
+                            <p:column headerText="Name">
+                                <h:outputText value="#{file.name}"/>
+                            </p:column>
+
+                            <p:column headerText="Type">
+                                <h:outputText value="#{file.type}"/>
+                            </p:column>
+
+                            <p:column headerText="Size">
+                                <h:outputText value="#{file.size}"/>
+                            </p:column>
+
+                            <p:column headerText="Download">
+                                <p:commandButton icon="pi pi-cloud-download" styleClass="rounded-button ui-button-flat"
+                                                 onclick="PrimeFaces.monitorDownload(start, stop)">
+                                    <p:fileDownload value="#{indexController.fileDownload}"/>
+                                </p:commandButton>
+                            </p:column>
+
+                            <!--            Delete-->
+                            <p:column headerText="Delete">
+                                <p:commandButton type="button" icon="pi pi-times"
+                                                 styleClass="rounded-button ui-button-danger ui-button-flat"
+                                                 action="#{indexController.deleteSelectedFile}">
+                                    <f:ajax event="click" render="eventsDT"/>
+                                </p:commandButton>
+                            </p:column>
+
+
+                        </p:dataTable>
+
+
+                    </h:form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer">
+            <div class="copyright">
+                <p>© 2021 Cloud Storage Inc. All rights reserved</p>
+            </div>
+
+            <div class="policy">
+                <p><a href="">Privacy policy</a></p>
+            </div>
+        </div>
+    </footer>
+
+</h:body>
+
+</html>

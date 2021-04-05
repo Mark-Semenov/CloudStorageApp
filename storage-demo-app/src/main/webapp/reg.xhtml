@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+
+<h:head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link href="style.css" rel="stylesheet"/>
+    <title>Cloud Storage</title>
+</h:head>
+
+
+<h:body>
+
+    <div class="container">
+        <p:growl id="messages" showDetail="true"/>
+
+        <h:form  method="post">
+            <div class="reg_content">
+                <p:outputLabel value="Login"/>
+                <div>
+                    <p:inputText styleClass="input_field" value="#{authController.login}" required="true"/>
+                </div>
+                <p:outputLabel value="Password"/>
+                <div>
+                    <p:password styleClass="input_field"  value="#{authController.password}" required="true"/>
+                </div>
+                <div>
+
+                    <h:commandButton styleClass="button" type="button" value="Register"
+                                     action="#{authController.createNewUser}"/>
+                </div>
+
+            </div>
+
+        </h:form>
+
+    </div>
+
+</h:body>
+</html>
