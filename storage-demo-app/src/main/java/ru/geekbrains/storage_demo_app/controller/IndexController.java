@@ -20,6 +20,9 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +74,8 @@ public class IndexController implements Serializable {
             fileProcess.deleteFile(selectedFile.getId());
             selectedFile = null;
             downloadFile = null;
+            PrimeFaces.current().ajax().update("files_table:eventsDT");
+            updateFilesView();
         }
     }
 
@@ -102,16 +107,19 @@ public class IndexController implements Serializable {
 
 
     public void handleFileUpload(FileUploadEvent event) {
+
         UploadedFile uploadedFile = event.getFile();
         File file = new File(uploadedFile.getFileName(), uploadedFile.getContentType(), uploadedFile.getContent(), uploadedFile.getSize());
+        InputStream in = new ByteArrayInputStream(uploadedFile.getContent());
+        BufferedInputStream buffer = new BufferedInputStream(in);
         file.setFolder(selectedFolder != null ? selectedFolder : rootFolder);
         fileBuffer.add(file);
-        PrimeFaces.current().ajax().update("files_table:eventsDT");
+        fileProcess.upload(fileBuffer, buffer);
         FacesMessage message = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, message);
-        fileProcess.upload(fileBuffer);
+        PrimeFaces.current().ajax().update("files_table:eventsDT");
+        updateFilesView();
     }
-
 
     public void deleteSelectedFolder() {
         if (selectedFolder == null) {
@@ -124,9 +132,10 @@ public class IndexController implements Serializable {
             FacesMessage message = new FacesMessage("Successful", selectedFolder.getName() + " is deleted.");
             FacesContext.getCurrentInstance().addMessage(null, message);
             selectedFolder = null;
-            userFiles = null;
+            selectedNode = null;
             PrimeFaces.current().ajax().update("form:tree");
             PrimeFaces.current().ajax().update("files_table:eventsDT");
+            updateFilesView();
         }
     }
 
@@ -140,6 +149,7 @@ public class IndexController implements Serializable {
             }
         }
     }
+
 
     public void renameFolder() {
         selectedFolder.setName(newFolderName);
@@ -189,6 +199,13 @@ public class IndexController implements Serializable {
         PrimeFaces.current().ajax().update("files_table:eventsDT");
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, "Unselected", event.getTreeNode().toString());
         FacesContext.getCurrentInstance().addMessage(null, message);
+    }
+
+
+    public void updateFilesView() {
+        if (selectedFolder == null) {
+            userFiles = fileProcess.getFiles();
+        } else userFiles = fileProcess.getFilesByFolderId(selectedFolder);
     }
 
     public List<File> getUserFiles() {

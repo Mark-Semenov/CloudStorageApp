@@ -17,6 +17,8 @@ public class File implements Serializable {
     private Long id;
     private String name;
     private String type;
+
+    @Transient
     private byte [] content;
     private Long size;
 

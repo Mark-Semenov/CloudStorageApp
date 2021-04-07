@@ -2,6 +2,7 @@ package ru.geekbrains.storage_demo_app.entities;
 
 import org.primefaces.model.StreamedContent;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class DownloadFile implements StreamedContent, Serializable {
 
     @Override
     public InputStream getStream() {
-        return new ByteArrayInputStream(file.getContent());
+        return new BufferedInputStream(new ByteArrayInputStream(file.getContent()), 8189);
     }
 
     @Override
