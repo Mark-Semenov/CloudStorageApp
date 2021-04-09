@@ -16,7 +16,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateful;
 import javax.ejb.TransactionAttribute;
 import javax.validation.constraints.NotNull;
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,7 +49,6 @@ public class FileProcess {
 
     @PostConstruct
     public void init() {
-
         this.user = userDAO.getUserByLogin(sessionContext.getCallerPrincipal().getName());
         userFolders = folderDAO.getFoldersByUserId(this.user.getId());
         if (userFolders.isEmpty()) {
@@ -66,16 +64,9 @@ public class FileProcess {
     }
 
 
-    public void upload(List<File> files, BufferedInputStream buffer) {
-        File f = new File();
-        for (File file : files) {
-            f.setFolder(file.getFolder());
-            f.setName(file.getName());
-            f.setSize(file.getSize());
-            f.setType(file.getType());
-            fileDao.writeFile(f);
-            writeFileAtHDD(buffer, file);
-        }
+    public void upload(File file) {
+        fileDao.writeFile(file);
+        writeFileAtHDD(file.getContent(), file);
     }
 
     @TransactionAttribute
@@ -89,7 +80,7 @@ public class FileProcess {
         return fileDao.getFilesByFolderId(rootUserFolder.getId());
     }
 
-    public List<File> getFilesByFolderId(Folder folder){
+    public List<File> getFilesByFolderId(Folder folder) {
         return fileDao.getFilesByFolderId(folder.getId());
     }
 
@@ -129,8 +120,7 @@ public class FileProcess {
 
     //Запись на диск в директорию с именем <Логин> пользователя
 
-    public void writeFileAtHDD(@NotNull BufferedInputStream buffer, File file) {
-
+    public void writeFileAtHDD(@NotNull byte[] content, File file) {
         Path folderPats = Paths.get("D:\\" + user.getLogin());
         Path filePath = Paths.get("D:\\" + user.getLogin() + "\\" + file.getName());
 
@@ -139,10 +129,12 @@ public class FileProcess {
                 Files.createDirectory(folderPats);
             }
 
-            Files.write(filePath, buffer.readAllBytes());
+            Files.write(filePath, content);
+
 
         } catch (IOException e) {
             e.printStackTrace();
+            throw new OutOfMemoryError("не достаточно памяти");
         }
     }
 

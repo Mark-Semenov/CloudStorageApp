@@ -20,11 +20,8 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Named
@@ -37,7 +34,6 @@ public class IndexController implements Serializable {
     private UploadedFile file;
     private UploadedFiles files;
     private List<File> userFiles;
-    private final List<File> fileBuffer = new ArrayList<>();
     private File selectedFile;
     private StreamedContent downloadFile;
     private TreeNode root;
@@ -49,6 +45,7 @@ public class IndexController implements Serializable {
 
     @Inject
     private HttpSession httpSession;
+
 
     @PostConstruct
     public void init() {
@@ -106,19 +103,20 @@ public class IndexController implements Serializable {
     }
 
 
-    public void handleFileUpload(FileUploadEvent event) {
-
+    public void handleFileUpload(FileUploadEvent event) throws IOException {
         UploadedFile uploadedFile = event.getFile();
-        File file = new File(uploadedFile.getFileName(), uploadedFile.getContentType(), uploadedFile.getContent(), uploadedFile.getSize());
-        InputStream in = new ByteArrayInputStream(uploadedFile.getContent());
-        BufferedInputStream buffer = new BufferedInputStream(in);
+        File file = new File(uploadedFile.getFileName(), uploadedFile.getContentType(), uploadedFile.getSize(), uploadedFile.getContent());
         file.setFolder(selectedFolder != null ? selectedFolder : rootFolder);
-        fileBuffer.add(file);
-        fileProcess.upload(fileBuffer, buffer);
+        fileProcess.upload(file);
         FacesMessage message = new FacesMessage("Successful", event.getFile().getFileName() + " is uploaded.");
         FacesContext.getCurrentInstance().addMessage(null, message);
         PrimeFaces.current().ajax().update("files_table:eventsDT");
         updateFilesView();
+        try {
+            uploadedFile.getInputStream().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void deleteSelectedFolder() {
@@ -287,5 +285,6 @@ public class IndexController implements Serializable {
     public void setMenuItemId(String menuItemId) {
         this.menuItemId = menuItemId;
     }
+
 }
 

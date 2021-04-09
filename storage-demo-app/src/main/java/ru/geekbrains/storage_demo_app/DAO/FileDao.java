@@ -28,8 +28,12 @@ public class FileDao {
         entityManager.remove(getFileById(id));
     }
 
-    public List<File> getFilesByFolderId(Long id){
+    public List<File> getFilesByFolderId(Long id) {
         return entityManager.createNamedQuery("GET_FILES_BY_FOLDER_ID", File.class).setParameter("id", id).getResultList();
+    }
+
+    public List<File> getAllFiles(){
+        return entityManager.createNamedQuery("GET_FILES", File.class).getResultList();
     }
 
 

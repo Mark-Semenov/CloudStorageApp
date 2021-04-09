@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 @NamedQueries({
         @NamedQuery(name = "GET_FILES_BY_FOLDER_ID", query = "select f from File f where f.folder.id = :id"),
+        @NamedQuery(name = "GET_FILES", query = "select f from File f"),
 })
 
 
@@ -20,12 +21,10 @@ public class File implements Serializable {
 
     @Transient
     private byte [] content;
-    private Long size;
-
-
     @Transient
     private static final long serialVersionUID = 1L;
 
+    private Long size;
 
     @ManyToOne (fetch = FetchType.EAGER)
     @JoinColumn (name = "folder_id")
@@ -34,11 +33,11 @@ public class File implements Serializable {
     public File() {
     }
 
-    public File(String name, String type, byte[] content, Long size) {
+    public File(String name, String type, Long size, byte[] content) {
         this.name = name;
         this.type = type;
-        this.content = content;
         this.size = size;
+        this.content = content;
     }
 
     public Long getId() {
@@ -98,3 +97,4 @@ public class File implements Serializable {
                 '}';
     }
 }
+
