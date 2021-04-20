@@ -14,31 +14,43 @@
 
 
 <h:body>
-
     <div class="container">
-        <p:growl id="messages" showDetail="true"/>
-
-        <h:form  method="post">
-            <div class="reg_content">
-                <p:outputLabel value="Login"/>
-                <div>
-                    <p:inputText styleClass="input_field" value="#{authController.login}" required="true"/>
-                </div>
-                <p:outputLabel value="Password"/>
-                <div>
-                    <p:password styleClass="input_field"  value="#{authController.password}" required="true"/>
-                </div>
-                <div>
-
-                    <h:commandButton styleClass="button" type="button" value="Register"
-                                     action="#{authController.createNewUser}"/>
-                </div>
-
+        <div class="auth_">
+            <p:growl id="messages" showDetail="true"/>
+            <div class="nav">
+                <form>
+                    <a id="back" class="reg_link" href="#{authController.authXhtml}">Back</a>
+                </form>
             </div>
 
-        </h:form>
+            <h:form method="post" styleClass="content">
+                <div>
+                    <div>
+                        <h2 class="heading">User Registration</h2>
+                    </div>
+                    <p:outputPanel>
+                        <div>
+                            <h4 class="input_heading">Login</h4>
+                            <p:inputText id="login" class="input_field" value="#{authController.login}"/>
+                        </div>
+                        <div>
+                            <h4 class="input_heading">Password</h4>
+                            <p:inputText type="password" id="password" class="input_field"
+                                         value="#{authController.password}"/>
+                        </div>
+                    </p:outputPanel>
+
+                    <div class="button_log">
+                        <h:commandButton styleClass="button" value="Register"
+                                         action="#{authController.createNewUser}"/>
+                    </div>
+
+                </div>
+
+            </h:form>
+
+        </div>
 
     </div>
-
 </h:body>
 </html>

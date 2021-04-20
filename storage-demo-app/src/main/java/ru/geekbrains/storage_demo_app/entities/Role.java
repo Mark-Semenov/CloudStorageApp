@@ -5,17 +5,20 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
+@NamedQueries({
+        @NamedQuery(name = "GET_ROLES_BY_NAME", query = "from Role r where r.name = :name")
+})
+
 @Entity
 @Table(name = "roles")
 public class Role implements Serializable {
 
     @Id
     @NotNull
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "roles")

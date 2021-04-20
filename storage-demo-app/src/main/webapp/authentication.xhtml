@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:p="http://primefaces.org/ui">
+>
 
 
 <h:head>
@@ -13,32 +12,38 @@
 </h:head>
 
 
-<h:body styleClass="container">
+<h:body>
 
-    <div class="content">
-        <div class="nav">
+    <div class="container">
 
-            <h2 class="heading">Sign In</h2>
-            <h:form>
-                <h:link id="reg" styleClass="reg_link" outcome="#{authController.registration}" value="Sign Up"/>
-            </h:form>
+        <div class="auth_">
+
+            <div class="nav">
+                <form>
+                    <a id="reg" class="reg_link" href="#{authController.registration}">Sign Up</a>
+                </form>
+            </div>
+
+
+            <div class="content">
+
+                <form action="j_security_check" method="POST">
+                    <h2 class="heading">Sign In</h2>
+                    <div>
+                        <h4 class="input_heading">Login</h4>
+                        <input class="input_field" id="j_username" name="j_username"/>
+                    </div>
+                    <div>
+                        <h4 class="input_heading">Password</h4>
+                        <input class="input_field" type="password" id="j_password" name="j_password"/>
+                    </div>
+                    <div class="button_log">
+                        <button class="button">Login</button>
+                    </div>
+                </form>
+            </div>
 
         </div>
-
-        <form action="j_security_check" method="POST">
-            <div>
-                <h3 class="input_heading">Login</h3>
-                <input class="input_field" id="j_username" name="j_username"/>
-            </div>
-
-            <div>
-                <h3 class="input_heading">Password</h3>
-                <input class="input_field" type="password" id="j_password" name="j_password"/>
-            </div>
-            <div>
-                <button class="button">Login</button>
-            </div>
-        </form>
 
     </div>
 

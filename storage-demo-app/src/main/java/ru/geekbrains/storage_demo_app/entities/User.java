@@ -1,12 +1,14 @@
 package ru.geekbrains.storage_demo_app.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
 
 @NamedQueries({
+        @NamedQuery(name = "GET_USERS", query = "from User"),
         @NamedQuery(name = "CHECK_USER", query = "from User u where u.login = :login and u.password = :password"),
         @NamedQuery(name = "GET_USER_BY_ID", query = "from User u where u.id = :id"),
         @NamedQuery(name = "GET_USER_BY_LOGIN", query = "from User u where u.login = :login"),
@@ -21,14 +23,16 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotNull
     private String login;
+    @NotNull
     private String password;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", orphanRemoval = true)
     private List<Folder> folders;
 
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REMOVE})
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")

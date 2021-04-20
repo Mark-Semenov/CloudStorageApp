@@ -49,31 +49,24 @@ public class FileProcess {
 
     @PostConstruct
     public void init() {
-
         this.user = userDAO.getUserByLogin(sessionContext.getCallerPrincipal().getName());
         userFolders = folderDAO.getFoldersByUserId(this.user.getId());
         if (userFolders.isEmpty()) {
             rootUserFolder = new Folder("Root", "Folder");
             rootUserFolder.setUser(this.user);
             createFolder(rootUserFolder);
-        } else rootUserFolder = findRootFolder(this.user.getId());
+        } else {
+            rootUserFolder = findRootFolder(this.user.getId());
+        }
 
         treeViewRoot = new TreeMaker(userFolders).getView();
 
     }
 
 
-    public void upload(List<File> files) {
-        File f = new File();
-        for (File file : files) {
-            f.setFolder(file.getFolder());
-            f.setName(file.getName());
-            f.setSize(file.getSize());
-            f.setContent(file.getContent());
-            f.setType(file.getType());
-            fileDao.writeFile(f);
-            writeFileAtHDD(f);
-        }
+    public void upload(File file) {
+        fileDao.writeFile(file);
+        writeFileAtHDD(file.getContent(), file);
     }
 
     @TransactionAttribute
@@ -87,14 +80,18 @@ public class FileProcess {
         return fileDao.getFilesByFolderId(rootUserFolder.getId());
     }
 
-
-    public List<Folder> getFolders() {
-        return folderDAO.getFoldersByUserId(user.getId());
+    public List<File> getFilesByFolderId(Folder folder) {
+        return fileDao.getFilesByFolderId(folder.getId());
     }
 
-
     public File findFileById(@NotNull Long id) {
-        return fileDao.getFileById(id);
+        File fl = fileDao.getFileById(id);
+        File file = new File();
+        file.setName(fl.getName());
+        file.setSize(fl.getSize());
+        file.setType(fl.getType());
+        file.setContent(getFileContent(file));
+        return file;
     }
 
     public Folder findFolder(Folder folder) {
@@ -108,7 +105,7 @@ public class FileProcess {
     }
 
     @TransactionAttribute
-    public void deleteFolder (@NotNull Folder folder){
+    public void deleteFolder(@NotNull Folder folder) {
         folderDAO.deleteFolder(folder);
     }
 
@@ -123,8 +120,7 @@ public class FileProcess {
 
     //Запись на диск в директорию с именем <Логин> пользователя
 
-    public void writeFileAtHDD(@NotNull File file) {
-
+    public void writeFileAtHDD(@NotNull byte[] content, File file) {
         Path folderPats = Paths.get("D:\\" + user.getLogin());
         Path filePath = Paths.get("D:\\" + user.getLogin() + "\\" + file.getName());
 
@@ -133,10 +129,12 @@ public class FileProcess {
                 Files.createDirectory(folderPats);
             }
 
-            Files.write(filePath, file.getContent());
+            Files.write(filePath, content);
+
 
         } catch (IOException e) {
             e.printStackTrace();
+            throw new OutOfMemoryError("не достаточно памяти");
         }
     }
 
@@ -150,6 +148,20 @@ public class FileProcess {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    //Получаем файл с диска по его имени
+    public byte[] getFileContent(File file) {
+        byte[] content = new byte[1024];
+        Path path = Paths.get("D:\\" + user.getLogin() + "\\" + file.getName());
+        if (Files.exists(path)) {
+            try {
+                content = Files.readAllBytes(path);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return content;
     }
 
 

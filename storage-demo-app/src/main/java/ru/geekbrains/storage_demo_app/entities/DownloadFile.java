@@ -2,9 +2,8 @@ package ru.geekbrains.storage_demo_app.entities;
 
 import org.primefaces.model.StreamedContent;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -23,7 +22,7 @@ public class DownloadFile implements StreamedContent, Serializable {
     }
 
     @Override
-    public InputStream getStream() {
+    public InputStream getStream() throws OutOfMemoryError {
         return new ByteArrayInputStream(file.getContent());
     }
 
@@ -49,4 +48,5 @@ public class DownloadFile implements StreamedContent, Serializable {
     public void setFile(File file) {
         this.file = file;
     }
+
 }
